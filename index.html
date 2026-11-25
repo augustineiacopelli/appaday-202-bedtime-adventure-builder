@@ -90,6 +90,15 @@ h2.section:first-child{margin-top:4px}
 .field label{display:block;font-weight:700;margin-bottom:6px}
 .field input{width:100%;min-height:50px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:inherit;font-size:1.05rem}
 .field input::placeholder{color:#8f89a5}
+.name-row{display:flex;gap:8px}
+.name-row input{flex:1;min-width:0}
+.name-row .btn{min-height:50px;padding:0 18px;border-radius:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px 0 14px;border-radius:999px;background:rgba(166,61,158,.24);border:1.5px solid rgba(230,174,224,.5);font-weight:800}
+.chip button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:none;border-radius:50%;background:none;color:var(--cream);cursor:pointer}
+.chip button:hover{background:rgba(255,255,255,.12)}
+.chip svg{width:16px;height:16px}
 .hint{color:var(--muted);font-size:.85rem;margin:6px 0 0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:0 22px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;font-size:1.02rem;cursor:pointer;text-decoration:none}
 .btn:hover{background:var(--panel-hi)}
@@ -218,11 +227,15 @@ footer.bottom a{color:var(--accent-hi);font-weight:700;display:inline-flex;align
     <h2 class="section">How old is the listener?</h2>
     <div class="pills" id="bandPills" role="group" aria-label="Age band"></div>
 
-    <h2 class="section">Who is the hero?</h2>
+    <h2 class="section">Who are the heroes?</h2>
     <div class="field">
-      <label for="nameInput">Child's name (optional)</label>
-      <input id="nameInput" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="20" placeholder="Leave blank and the story says you">
-      <p class="hint">Letters, spaces, and apostrophes, up to 20 characters. Saved only on this device.</p>
+      <label for="nameInput">Children's names (optional, up to 4)</label>
+      <div class="name-row">
+        <input id="nameInput" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="20" placeholder="Type a name">
+        <button class="btn" id="addNameBtn" type="button">Add</button>
+      </div>
+      <div class="chips" id="nameChips" role="list" aria-label="Heroes"></div>
+      <p class="hint" id="nameHint">Add each child who is listening. Leave it empty and the story says you. Names are saved only on this device.</p>
     </div>
 
     <div class="build-row">
@@ -326,10 +339,10 @@ footer.bottom a{color:var(--accent-hi);font-weight:700;display:inline-flex;align
     </section>
     <section>
       <h3>Saved settings</h3>
-      <p class="hint" style="margin:0 0 10px">Forgets the world, age band, name, and text size. Your Claude key is kept.</p>
+      <p class="hint" style="margin:0 0 10px">Forgets the world, age band, names, and text size. Your Claude key is kept.</p>
       <button class="btn block" id="clearBtn" type="button">Clear Saved Settings</button>
       <div class="confirm" id="confirmPanel" hidden>
-        <p>Clear the saved world, age band, name, and text size?</p>
+        <p>Clear the saved world, age band, names, and text size?</p>
         <div class="row">
           <button class="btn" id="confirmNo" type="button">Cancel</button>
           <button class="btn danger" id="confirmYes" type="button">Clear</button>
@@ -395,6 +408,22 @@ var BANDS = {
 function sanitizeName(s) {
   if (typeof s !== 'string') return '';
   return s.replace(/[^\p{L} '\u2019]/gu, '').replace(/\s+/g, ' ').slice(0, 20);
+}
+
+var MAX_HEROES = 4;
+function cleanNames(list) {
+  var out = [], seen = {};
+  (Array.isArray(list) ? list : []).forEach(function (n) {
+    var c = sanitizeName(n).trim();
+    var k = c.toLowerCase();
+    if (c && !seen[k] && out.length < MAX_HEROES) { seen[k] = true; out.push(c); }
+  });
+  return out;
+}
+function joinNames(list) {
+  if (list.length <= 1) return list.join('');
+  if (list.length === 2) return list[0] + ' and ' + list[1];
+  return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
 }
 
 function extractJSON(raw) {
@@ -480,7 +509,7 @@ function buildPrompt(settings) {
   var cfg = BANDS[settings.band];
   var theme = null;
   for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === settings.theme) theme = THEMES[i];
-  var name = sanitizeName(settings.name || '').trim();
+  var names = cleanNames(settings.names || (settings.name ? [settings.name] : []));
   var system = [
     'You are a gentle bedtime storyteller who writes interactive, choose your own path stories for young children.',
     'Content rules: keep everything cozy, kind, and safe. No frightening villains, no peril, no injuries, no scary darkness, no loud chases, no lingering sadness, no romance, and no brand names or famous characters. Small problems are solved with kindness, curiosity, patience, or a helpful friend.',
@@ -495,9 +524,11 @@ function buildPrompt(settings) {
     'Vocabulary: ' + cfg.vocab,
     'Sentences: ' + cfg.sentence,
     'Length: each node\'s text is about ' + cfg.words + ' words. Separate paragraphs with a blank line if a node has more than one.',
-    name
-      ? 'Hero: a child named ' + name + '. Use the name naturally a few times, in third person.'
-      : 'Hero: tell the story in second person, so the listener is the hero ("you").',
+    names.length > 1
+      ? 'Heroes: ' + names.length + ' children named ' + joinNames(names) + ', adventuring together as a team. Tell it in third person, use every name naturally, and give each child a moment to help or shine in every node. The choices are made together, and every ending tucks all of them in.'
+      : names.length === 1
+        ? 'Hero: a child named ' + names[0] + '. Use the name naturally a few times, in third person.'
+        : 'Hero: tell the story in second person, so the listener is the hero ("you").',
     'Structure: exactly ' + cfg.nodes + ' nodes with ids n1 through n' + cfg.nodes + '. The start is n1. The listener makes exactly ' + cfg.choices + ' choices on every path, so every ending is reached after ' + cfg.choices + ' choices. Use this exact tree:',
     treeShape(cfg),
     'Choice labels are short, inviting actions of 8 words or fewer, such as "Follow the glowing fireflies". The two choices at each node lead somewhere genuinely different, and each node\'s text continues smoothly from the choice that led to it.',
@@ -534,14 +565,15 @@ var thinkMemo = loadThinkMemo();
 
 /* ---------- persistence ---------- */
 function loadSettings() {
-  var d = { theme:'', band:'5-6', name:'', size:'m' };
+  var d = { theme:'', band:'5-6', names:[], size:'m' };
   try {
     var raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
       var s = JSON.parse(raw) || {};
       if (THEMES.some(function (t) { return t.id === s.theme; })) d.theme = s.theme;
       if (BANDS[s.band]) d.band = s.band;
-      if (typeof s.name === 'string') d.name = sanitizeName(s.name);
+      if (Array.isArray(s.names)) d.names = cleanNames(s.names);
+      else if (typeof s.name === 'string') d.names = cleanNames([s.name]);
       if (SIZES[s.size]) d.size = s.size;
     }
   } catch (e) { /* storage unavailable */ }
@@ -617,13 +649,54 @@ function renderSetup() {
     p.addEventListener('click', function () { settings.band = k; saveSettings(); renderSetup(); });
     pills.appendChild(p);
   });
-  if (document.activeElement !== $('nameInput')) $('nameInput').value = settings.name;
+  renderNames();
   var ready = !!settings.theme && !!BANDS[settings.band];
   $('buildBtn').disabled = !ready;
   var theme = THEMES.filter(function (t) { return t.id === settings.theme; })[0];
   $('buildHint').textContent = ready
-    ? theme.label + ' story for ages ' + BANDS[settings.band].label + ', with ' + BANDS[settings.band].choices + ' choices along the way.'
+    ? theme.label + ' story for ages ' + BANDS[settings.band].label + ', with ' + BANDS[settings.band].choices + ' choices along the way' +
+      (settings.names.length ? ', starring ' + joinNames(settings.names) + '.' : '.')
     : 'Pick a world to begin.';
+}
+
+function renderNames() {
+  var box = $('nameChips');
+  clearEl(box);
+  settings.names.forEach(function (n, i) {
+    var chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.setAttribute('role', 'listitem');
+    var t = document.createElement('span');
+    t.textContent = n;
+    var x = document.createElement('button');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Remove ' + n);
+    x.appendChild(svgEl('<path d="M6 6l12 12M18 6L6 18"/>'));
+    x.addEventListener('click', function () {
+      settings.names.splice(i, 1);
+      saveSettings();
+      renderSetup();
+      $('nameInput').focus();
+    });
+    chip.appendChild(t);
+    chip.appendChild(x);
+    box.appendChild(chip);
+  });
+  var full = settings.names.length >= MAX_HEROES;
+  $('nameInput').disabled = full;
+  $('addNameBtn').disabled = full;
+  $('nameInput').placeholder = full ? 'Four heroes is the most' : (settings.names.length ? 'Add another name' : 'Type a name');
+}
+
+function addPendingName() {
+  var el = $('nameInput');
+  var n = sanitizeName(el.value).trim();
+  el.value = '';
+  if (!n) return false;
+  settings.names = cleanNames(settings.names.concat([n]));
+  saveSettings();
+  renderSetup();
+  return true;
 }
 
 /* ---------- Claude ---------- */
@@ -692,10 +765,11 @@ async function callClaude(system, user) {
 
 async function generateStory() {
   if (!settings.theme || !BANDS[settings.band]) { show('setup'); return; }
-  settings.name = sanitizeName(settings.name).trim();
+  addPendingName();
+  settings.names = cleanNames(settings.names);
   saveSettings();
   var my = ++genSeq;
-  var snap = { theme:settings.theme, band:settings.band, name:settings.name };
+  var snap = { theme:settings.theme, band:settings.band, names:settings.names.slice() };
   show('loading');
   startSleepy();
   var p = buildPrompt(snap);
@@ -805,8 +879,8 @@ function renderNode(id, instant) {
 
 function showEnding(node) {
   setParagraphs($('endText'), node.text);
-  var name = story.settings.name;
-  $('dreamsLine').textContent = name ? 'Sweet dreams, ' + name + '.' : 'Sweet dreams.';
+  var names = story.settings.names || [];
+  $('dreamsLine').textContent = names.length ? 'Sweet dreams, ' + joinNames(names) + '.' : 'Sweet dreams.';
   show('end');
   $('dreamsLine').focus({ preventScroll:true });
 }
@@ -862,17 +936,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var el = $('nameInput');
     var clean = sanitizeName(el.value);
     if (clean !== el.value) el.value = clean;
-    settings.name = clean;
-    saveSettings();
-  });
-  $('nameInput').addEventListener('blur', function () {
-    settings.name = sanitizeName($('nameInput').value).trim();
-    $('nameInput').value = settings.name;
-    saveSettings();
   });
   $('nameInput').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !$('buildBtn').disabled) { e.preventDefault(); generateStory(); }
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (addPendingName()) $('nameInput').focus();
+      else if (e.key === 'Enter' && !$('buildBtn').disabled) generateStory();
+    }
   });
+  $('addNameBtn').addEventListener('click', function () { addPendingName(); $('nameInput').focus(); });
 
   $('buildBtn').addEventListener('click', generateStory);
   $('cancelBtn').addEventListener('click', function () { genSeq++; stopSleepy(); renderSetup(); show('setup'); });
@@ -897,7 +969,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $('confirmNo').addEventListener('click', function () { $('confirmPanel').hidden = true; $('clearBtn').focus(); });
   $('confirmYes').addEventListener('click', function () {
     try { localStorage.removeItem(SETTINGS_KEY); } catch (e) { /* ignore */ }
-    settings = { theme:'', band:'5-6', name:'', size:'m' };
+    settings = { theme:'', band:'5-6', names:[], size:'m' };
     $('nameInput').value = '';
     applySize();
     renderSetup();
