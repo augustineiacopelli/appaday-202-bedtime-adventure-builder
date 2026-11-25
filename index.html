@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bedtime Adventure Builder | AppADay 202</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="apple-touch-icon" href="https://augustineiacopelli.github.io/appaday/icons/202.png">
+<meta name="apple-mobile-web-app-title" content="Bedtime">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="https://augustineiacopelli.github.io/appaday/manifests/202.webmanifest">
+<script src="https://augustineiacopelli.github.io/appaday/save.js" defer></script>
+<script src="https://augustineiacopelli.github.io/appaday/models.js"></script>
+<script src="https://augustineiacopelli.github.io/appaday/keys.js" data-app="202" data-accent="#A63D9E" defer></script>
+<meta name="description" content="Calm choose your path bedtime stories, written by Claude for ages 3 to 10.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1130;--bg2:#121c4a;--panel:rgba(255,255,255,.055);--panel-hi:rgba(255,255,255,.09);
+  --line:rgba(246,236,214,.16);--cream:#f6ecd6;--muted:#c3bdd3;--accent:#A63D9E;--accent-hi:#e6aee0;
+  --amber:255,196,120;--danger:#f0a0a0;--ts:1;--fade:400ms;
+}
+[hidden]{display:none !important}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0}
+body{
+  min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
+  font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(15px,3.9vw,17px);
+  color:var(--cream);line-height:1.6;
+  background:
+    radial-gradient(120% 70% at 50% -10%, #1d2a6e 0%, rgba(29,42,110,0) 60%),
+    radial-gradient(90% 60% at 100% 110%, rgba(166,61,158,.22) 0%, rgba(166,61,158,0) 60%),
+    radial-gradient(80% 50% at 0% 100%, rgba(var(--amber),.07) 0%, rgba(var(--amber),0) 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:0;box-shadow:inset 0 0 18vmax rgba(0,0,0,.55)}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.7;
+  background-image:
+    radial-gradient(1.6px 1.6px at 18px 26px,#fff,rgba(255,255,255,0)),
+    radial-gradient(1px 1px at 92px 70px,rgba(255,255,255,.85),rgba(255,255,255,0)),
+    radial-gradient(1.3px 1.3px at 160px 18px,rgba(255,240,210,.9),rgba(255,255,255,0)),
+    radial-gradient(1px 1px at 60px 140px,rgba(255,255,255,.7),rgba(255,255,255,0)),
+    radial-gradient(1.8px 1.8px at 200px 120px,rgba(255,255,255,.9),rgba(255,255,255,0)),
+    radial-gradient(1px 1px at 128px 190px,rgba(255,255,255,.75),rgba(255,255,255,0));
+  background-size:230px 220px;animation:twinkle 5s ease-in-out infinite alternate}
+.stars.s2{background-size:330px 300px;background-position:70px 40px;opacity:.5;animation-duration:7s;animation-delay:-3s}
+@keyframes twinkle{from{opacity:.35}to{opacity:.85}}
+
+.shell{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;width:100%}
+.wrap{width:100%;max-width:760px;margin:0 auto;padding:0 16px}
+
+header.top{border-bottom:1px solid var(--line);background:rgba(10,17,48,.55);backdrop-filter:blur(6px)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none;width:30px;height:30px;color:#f4e2ad;filter:drop-shadow(0 0 8px rgba(var(--amber),.55))}
+.brand h1{margin:0;font-size:clamp(1rem,4.2vw,1.2rem);font-weight:800;line-height:1.2}
+.brand small{display:block;color:var(--muted);font-weight:600;font-size:.78rem}
+.top-actions{display:flex;align-items:center;gap:8px;flex:none}
+a.pill-link{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);color:var(--cream);text-decoration:none;font-weight:700;font-size:.85rem;background:var(--panel)}
+a.pill-link:hover{background:var(--panel-hi)}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--cream);cursor:pointer}
+.icon-btn:hover{background:var(--panel-hi)}
+.icon-btn svg{width:22px;height:22px}
+
+main{flex:1;padding:18px 0 28px}
+.view{animation:viewIn var(--fade) ease}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.section{font-size:clamp(1.05rem,4.4vw,1.25rem);margin:20px 0 10px;font-weight:800}
+h2.section:first-child{margin-top:4px}
+.lede{color:var(--muted);margin:0 0 6px}
+
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:640px){.theme-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.theme-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;min-height:132px;padding:14px 12px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
+.theme-card:hover{background:var(--panel-hi)}
+.theme-card svg{width:36px;height:36px;color:var(--accent-hi)}
+.theme-card .t-label{font-weight:800;font-size:1rem}
+.theme-card .t-seed{color:var(--muted);font-size:.8rem;line-height:1.35}
+.theme-card[aria-pressed="true"]{border-color:var(--accent-hi);background:rgba(166,61,158,.22);box-shadow:0 0 0 3px rgba(166,61,158,.35),0 0 26px rgba(var(--amber),.12)}
+.theme-card[aria-pressed="true"] svg{color:#f4e2ad}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:700;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+.field input{width:100%;min-height:50px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:inherit;font-size:1.05rem}
+.field input::placeholder{color:#8f89a5}
+.hint{color:var(--muted);font-size:.85rem;margin:6px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:0 22px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;font-size:1.02rem;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--panel-hi)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 24px rgba(166,61,158,.35)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.block{width:100%}
+.build-row{margin-top:22px}
+:focus-visible{outline:3px solid #f4e2ad;outline-offset:3px}
+
+/* Loading */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:52vh;gap:22px}
+.moon-wrap{position:relative;width:130px;height:130px}
+.moon{position:absolute;inset:0;border-radius:50%;box-shadow:inset 30px -8px 0 0 #f4e2ad;filter:drop-shadow(0 0 22px rgba(var(--amber),.55));animation:bob 3.2s ease-in-out infinite alternate}
+.zz{position:absolute;right:-6px;top:6px;font-weight:800;color:var(--accent-hi);opacity:0;animation:zfloat 3.6s ease-in infinite}
+.zz.z2{animation-delay:1.2s;right:-18px;font-size:1.2rem}
+.zz.z3{animation-delay:2.4s;right:-30px;font-size:1.45rem}
+@keyframes bob{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-10px) rotate(4deg)}}
+@keyframes zfloat{0%{opacity:0;transform:translate(0,10px)}25%{opacity:.9}100%{opacity:0;transform:translate(14px,-46px)}}
+.sleepy{font-size:clamp(1.05rem,4.6vw,1.3rem);font-weight:700;min-height:2.2em;transition:opacity .4s}
+.sleepy.dim{opacity:0}
+
+/* Story */
+.story-title{font-size:clamp(1.25rem,5.6vw,1.75rem);font-weight:800;margin:0 0 6px;line-height:1.25;color:#fbf2dc}
+.path{display:flex;align-items:center;gap:10px;margin:0 0 16px;color:var(--muted);font-weight:700;font-size:.85rem}
+.dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(246,236,214,.2)}
+.dot.done{background:var(--accent-hi)}
+.dot.now{background:#f4e2ad;box-shadow:0 0 10px rgba(var(--amber),.8)}
+.fader{transition:opacity var(--fade) ease}
+.fader.out{opacity:0}
+.story-text{font-size:calc(clamp(1.1rem,4.5vw,1.42rem) * var(--ts));line-height:1.8;padding:18px 18px 6px;border-radius:18px;background:rgba(10,17,48,.45);border:1px solid var(--line)}
+.story-text p{margin:0 0 14px}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.choice{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;border-radius:16px;border:1.5px solid rgba(230,174,224,.45);background:rgba(166,61,158,.16);color:var(--cream);font:inherit;font-weight:700;font-size:calc(clamp(1rem,4.2vw,1.15rem) * var(--ts));text-align:left;cursor:pointer;line-height:1.35}
+.choice:hover{background:rgba(166,61,158,.3)}
+.choice svg{flex:none;width:20px;height:20px;color:#f4e2ad}
+.story-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:16px}
+.text-btn{min-height:44px;padding:0 12px;border:none;background:none;color:var(--muted);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+
+/* End */
+.end-card{padding:22px 18px;border-radius:22px;background:rgba(10,17,48,.5);border:1px solid var(--line);position:relative;overflow:hidden}
+.end-card::before{content:"";position:absolute;width:260px;height:260px;right:-90px;top:-110px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--amber),.22),rgba(var(--amber),0));pointer-events:none}
+.flourish{text-align:center;margin:22px 0 8px}
+.flourish svg{width:64px;height:64px;color:#f4e2ad;filter:drop-shadow(0 0 14px rgba(var(--amber),.6))}
+.flourish h2{margin:6px 0 0;font-size:clamp(1.5rem,7vw,2.2rem);font-weight:800;color:#fbf2dc;text-shadow:0 0 22px rgba(var(--amber),.45)}
+.flourish p{margin:4px 0 0;color:var(--muted);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem}
+.end-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:20px}
+@media (min-width:560px){.end-actions{grid-template-columns:repeat(3,1fr)}}
+
+/* Error */
+.error-card{text-align:center;padding:30px 18px;border-radius:20px;background:rgba(10,17,48,.5);border:1px solid var(--line)}
+.error-card svg{width:56px;height:56px;color:#f4e2ad}
+.error-card h2{margin:10px 0 6px;font-size:1.3rem}
+.error-card .detail{color:var(--muted);font-size:.85rem;margin-top:8px;word-break:break-word}
+.error-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+@media (min-width:560px){.error-actions{flex-direction:row;justify-content:center}}
+
+footer.bottom{position:relative;z-index:1;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer.bottom .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+footer.bottom a{color:var(--accent-hi);font-weight:700;display:inline-flex;align-items:center;min-height:44px}
+
+/* Settings modal */
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,6,20,.7);padding:0}
+@media (min-width:560px){.modal{align-items:center;padding:20px}}
+.sheet{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:#121a44;border:1px solid var(--line);border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+@media (min-width:560px){.sheet{border-radius:22px}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sheet-head h2{margin:0;font-size:1.2rem}
+.sheet section{padding:14px 0;border-top:1px solid var(--line)}
+.sheet section:first-of-type{border-top:none}
+.sheet h3{margin:0 0 8px;font-size:1rem}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg .a1{font-size:.9rem}.seg .a2{font-size:1.05rem}.seg .a3{font-size:1.25rem}
+.confirm{margin-top:10px;padding:14px;border-radius:14px;border:1.5px solid rgba(240,160,160,.5);background:rgba(240,160,160,.08)}
+.confirm p{margin:0 0 10px}
+.confirm .row{display:flex;gap:10px}
+.confirm .row .btn{flex:1;min-height:48px}
+.btn.danger{background:#8c2f3d;border-color:#8c2f3d;color:#fff}
+.status{color:var(--accent-hi);font-weight:700;font-size:.88rem;min-height:1.3em;margin:8px 0 0}
+
+@media (prefers-reduced-motion: reduce){
+  :root{--fade:0ms}
+  .stars{display:none}
+  .moon,.zz{animation:none}
+  .zz{opacity:.6}
+  .view{animation:none}
+  .sleepy,.fader{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="stars s2" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<div class="shell">
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a.6.6 0 0 0-.8-.7A9.6 9.6 0 1 0 21.2 15.4a.6.6 0 0 0-.7-.8z"/></svg>
+      <div>
+        <h1>Bedtime Adventure Builder</h1>
+        <small>Choose your path stories for sleepy heads</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="pill-link" href="https://augustineiacopelli.github.io/appaday/">AppADay</a>
+      <button class="icon-btn" id="gearBtn" type="button" aria-label="Settings" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- SETUP -->
+  <section id="view-setup" class="view" aria-labelledby="setupH">
+    <h2 class="section" id="setupH">Pick a world</h2>
+    <div class="theme-grid" id="themeGrid" role="group" aria-label="Story world"></div>
+
+    <h2 class="section">How old is the listener?</h2>
+    <div class="pills" id="bandPills" role="group" aria-label="Age band"></div>
+
+    <h2 class="section">Who is the hero?</h2>
+    <div class="field">
+      <label for="nameInput">Child's name (optional)</label>
+      <input id="nameInput" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="20" placeholder="Leave blank and the story says you">
+      <p class="hint">Letters, spaces, and apostrophes, up to 20 characters. Saved only on this device.</p>
+    </div>
+
+    <div class="build-row">
+      <button class="btn primary block" id="buildBtn" type="button" disabled>Build Story</button>
+      <p class="hint" id="buildHint">Pick a world to begin.</p>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <section id="view-loading" class="view" hidden>
+    <div class="loading">
+      <div class="moon-wrap" aria-hidden="true">
+        <div class="moon"></div>
+        <span class="zz">z</span><span class="zz z2">z</span><span class="zz z3">z</span>
+      </div>
+      <p class="sleepy" id="sleepyMsg" aria-live="polite">Fluffing the pillows...</p>
+      <button class="text-btn" id="cancelBtn" type="button">Back to setup</button>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section id="view-story" class="view" hidden>
+    <h2 class="story-title" id="storyTitle"></h2>
+    <div class="path" id="pathInd">
+      <div class="dots" id="pathDots" aria-hidden="true"></div>
+      <span id="pathText"></span>
+    </div>
+    <div class="fader" id="storyFader">
+      <div class="story-text" id="storyText" aria-live="polite"></div>
+      <div class="choices" id="choices" role="group" aria-label="What happens next?"></div>
+    </div>
+    <div class="story-foot">
+      <button class="text-btn" id="storySetupBtn" type="button">Back to setup</button>
+      <button class="text-btn" id="restartBtn" type="button">Start this story over</button>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section id="view-end" class="view" hidden>
+    <div class="end-card">
+      <h2 class="story-title" id="endTitle"></h2>
+      <div class="story-text" id="endText" aria-live="polite"></div>
+      <div class="flourish">
+        <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><path d="M44 40.5A20 20 0 0 1 23.5 14a1.2 1.2 0 0 0-1.6-1.4A22 22 0 1 0 45.4 42a1.2 1.2 0 0 0-1.4-1.5z"/><path d="M48 10l1.4 3.6L53 15l-3.6 1.4L48 20l-1.4-3.6L43 15l3.6-1.4z"/><path d="M55 26l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>
+        <h2 id="dreamsLine" tabindex="-1">Sweet dreams</h2>
+        <p>The End</p>
+      </div>
+      <div class="end-actions">
+        <button class="btn primary" id="readAgainBtn" type="button">Read Again</button>
+        <button class="btn" id="newAdvBtn" type="button">New Adventure</button>
+        <button class="btn" id="changeBtn" type="button">Change Settings</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERROR -->
+  <section id="view-error" class="view" hidden>
+    <div class="error-card" role="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/></svg>
+      <h2 id="errTitle">The story got a little tangled</h2>
+      <p id="errMsg">Let us try that again.</p>
+      <p class="detail" id="errDetail"></p>
+      <div class="error-actions">
+        <button class="btn primary" id="retryBtn" type="button">Try Again</button>
+        <button class="btn" id="errBackBtn" type="button">Back to Setup</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <span>AppADay 202 | Bedtime Adventure Builder</span>
+    <a href="https://augustineiacopelli.github.io/appaday/">More apps at AppADay</a>
+  </div>
+</footer>
+</div>
+
+<!-- SETTINGS -->
+<div class="modal" id="settingsModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsH">
+    <div class="sheet-head">
+      <h2 id="settingsH">Settings</h2>
+      <button class="icon-btn" id="closeSettings" type="button" aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <section>
+      <h3>Claude key</h3>
+      <div id="keyMount"></div>
+    </section>
+    <section>
+      <h3>Story text size</h3>
+      <div class="seg" id="sizeSeg" role="group" aria-label="Story text size">
+        <button type="button" class="a1" data-size="s" aria-label="Small text">A</button>
+        <button type="button" class="a2" data-size="m" aria-label="Medium text">A</button>
+        <button type="button" class="a3" data-size="l" aria-label="Large text">A</button>
+      </div>
+    </section>
+    <section>
+      <h3>Saved settings</h3>
+      <p class="hint" style="margin:0 0 10px">Forgets the world, age band, name, and text size. Your Claude key is kept.</p>
+      <button class="btn block" id="clearBtn" type="button">Clear Saved Settings</button>
+      <div class="confirm" id="confirmPanel" hidden>
+        <p>Clear the saved world, age band, name, and text size?</p>
+        <div class="row">
+          <button class="btn" id="confirmNo" type="button">Cancel</button>
+          <button class="btn danger" id="confirmYes" type="button">Clear</button>
+        </div>
+      </div>
+      <p class="status" id="settingsStatus" aria-live="polite"></p>
+    </section>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* PURE:START */
+var MAX_TOKENS = 4000;
+
+var THEMES = [
+  { id:'space', label:'Space',
+    glyph:'<circle cx="12" cy="12" r="5"/><path d="M3.6 15.6c-1.6 1.9-.8 3.1 2.1 2.9 3-.2 7.4-1.9 10.8-4.5 3.5-2.6 5.3-5.3 4.5-6.6-.6-1-2.6-1-5.2-.1"/><path d="M19 3v2.4M17.8 4.2h2.4M5 5v1.8M4.1 5.9h1.8"/>',
+    seed:'A little rocket with a sleepy robot pilot drifts past glowing moons.' },
+  { id:'ocean', label:'Ocean',
+    glyph:'<path d="M2 8c2 0 2-1.5 4-1.5S8 8 10 8s2-1.5 4-1.5S16 8 18 8s2-1.5 4-1.5"/><path d="M2 13c2 0 2-1.5 4-1.5S8 13 10 13s2-1.5 4-1.5S16 13 18 13s2-1.5 4-1.5"/><path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5S16 18 18 18s2-1.5 4-1.5"/>',
+    seed:'A gentle sea turtle offers a ride to a lantern lit coral reef.' },
+  { id:'forest', label:'Forest',
+    glyph:'<path d="M12 2 6 10h3l-4 6h14l-4-6h3z"/><path d="M12 16v6"/>',
+    seed:'Fireflies lead the way to an old owl and her cozy hollow.' },
+  { id:'dragons', label:'Dragons',
+    glyph:'<path d="M12 22c4 0 7-2.7 7-6.6 0-3.4-2.2-5.4-3.4-7.4-.6 1.6-1.6 2.6-2.8 3 .4-3.4-.8-6.6-3.8-9 0 3.2-1.4 5.2-2.8 7C4.8 11 5 13 5 15.4 5 19.3 8 22 12 22z"/><path d="M12 22c-1.7 0-3-1.2-3-2.9 0-1.6 1.2-2.6 2-3.9.5 1 1.2 1.6 2 1.8.4-.8.6-1.5.6-2.3 1 1 2.4 2.3 2.4 4.4 0 1.7-1.3 2.9-3 2.9z"/>',
+    seed:'A small, kind dragon who cannot quite blow fire yet.' },
+  { id:'dinosaurs', label:'Dinosaurs',
+    glyph:'<path d="M12 21c-3 0-5-1.8-5-4.3 0-2.4 2.2-4.2 5-4.2s5 1.8 5 4.2c0 2.5-2 4.3-5 4.3z"/><path d="M7.6 11.6 4 6"/><path d="M12 10.4V3"/><path d="M16.4 11.6 20 6"/>',
+    seed:'A baby brontosaurus searches for the softest fern bed.' },
+  { id:'farm', label:'Farm',
+    glyph:'<path d="M3 21V10l9-6 9 6v11z"/><path d="M8 21v-7h8v7"/><path d="M8 14l8 7M16 14l-8 7"/><path d="M10 9.5h4"/>',
+    seed:'The barn animals get ready for bed under a harvest moon.' },
+  { id:'castle', label:'Castle',
+    glyph:'<path d="M4 21V8h3v2h2V8h2v2h2V8h2v2h2V8h3v13z"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/>',
+    seed:'A friendly castle where the knights wear slippers at night.' },
+  { id:'toyshop', label:'Toy Shop',
+    glyph:'<circle cx="6.5" cy="6" r="2.5"/><circle cx="17.5" cy="6" r="2.5"/><circle cx="12" cy="12.5" r="7"/><path d="M10 16c1.2.9 2.8.9 4 0"/><path d="M9.5 11h.01M14.5 11h.01"/>',
+    seed:'After closing time, the toys wake up for one quiet adventure.' }
+];
+
+var BAND_ORDER = ['3-4', '5-6', '7-8', '9-10'];
+var BANDS = {
+  '3-4': { label:'3 to 4', words:40,
+    vocab:'Use very simple, familiar words a three year old already knows. Gentle repetition and soft sound words (swish, hush, pitter pat) are welcome.',
+    sentence:'Keep sentences short, about 5 to 8 words each.',
+    choices:2, nodes:7 },
+  '5-6': { label:'5 to 6', words:70,
+    vocab:'Use simple everyday words, with an occasional fun new word whose meaning is clear from the story.',
+    sentence:'Use short sentences of about 6 to 10 words.',
+    choices:3, nodes:15 },
+  '7-8': { label:'7 to 8', words:100,
+    vocab:'Use rich but clear words that a second or third grader reads comfortably.',
+    sentence:'Mix short and medium sentences of about 8 to 14 words.',
+    choices:3, nodes:15 },
+  '9-10': { label:'9 to 10', words:140,
+    vocab:'Use vivid, descriptive vocabulary suited to a strong fourth or fifth grade reader.',
+    sentence:'Vary sentence length; some longer, flowing sentences are fine.',
+    choices:3, nodes:15 }
+};
+
+function sanitizeName(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/[^\p{L} '\u2019]/gu, '').replace(/\s+/g, ' ').slice(0, 20);
+}
+
+function extractJSON(raw) {
+  if (typeof raw !== 'string') throw new Error('The reply had no text.');
+  var s = raw.replace(/```[A-Za-z]*[ \t]*/g, '');
+  var a = s.indexOf('{');
+  var b = s.lastIndexOf('}');
+  if (a < 0 || b <= a) throw new Error('No JSON object was found in the reply.');
+  return JSON.parse(s.slice(a, b + 1));
+}
+
+function validateTree(tree, band) {
+  function fail(r) { return { ok:false, reason:r }; }
+  var cfg = BANDS[band];
+  if (!cfg) return fail('Unknown age band.');
+  if (!tree || typeof tree !== 'object' || Array.isArray(tree)) return fail('The reply was not a JSON object.');
+  if (typeof tree.title !== 'string' || !tree.title.trim()) return fail('The story is missing a title.');
+  if (typeof tree.start !== 'string' || !tree.start) return fail('The story is missing a start node.');
+  var nodes = tree.nodes;
+  if (!nodes || typeof nodes !== 'object' || Array.isArray(nodes)) return fail('The story has no nodes object.');
+  var has = function (id) { return typeof id === 'string' && Object.prototype.hasOwnProperty.call(nodes, id); };
+  if (!has(tree.start)) return fail('The start node ' + tree.start + ' does not exist.');
+  var ids = Object.keys(nodes);
+  for (var i = 0; i < ids.length; i++) {
+    var id = ids[i], n = nodes[id];
+    if (!n || typeof n !== 'object') return fail('Node ' + id + ' is not an object.');
+    var hasText = typeof n.text === 'string' && n.text.trim().length > 0;
+    var ch = n.choices;
+    if (n.ending === true) {
+      if (!hasText) return fail('Ending node ' + id + ' has no text.');
+      if (Array.isArray(ch) && ch.length) return fail('Ending node ' + id + ' should not have choices.');
+      continue;
+    }
+    if (!Array.isArray(ch) || ch.length === 0) {
+      return fail('Node ' + id + ' has no choices but is not marked "ending": true. Every leaf must be an ending.');
+    }
+    if (!hasText) return fail('Node ' + id + ' has no text.');
+    if (ch.length !== 2) return fail('Node ' + id + ' has ' + ch.length + ' choices; every non-ending node needs exactly two.');
+    for (var k = 0; k < 2; k++) {
+      var c = ch[k];
+      if (!c || typeof c.label !== 'string' || !c.label.trim()) return fail('A choice on node ' + id + ' has no label.');
+      if (!has(c.next)) return fail('A choice on node ' + id + ' points to ' + (c && c.next) + ', which does not exist.');
+    }
+    if (ch[0].next === ch[1].next) return fail('Both choices on node ' + id + ' lead to the same node.');
+  }
+  // Walk every path from the start: catch cycles and measure path depth.
+  var onPath = {}, reached = {}, err = null;
+  function walk(id, depth) {
+    if (err) return;
+    if (onPath[id]) { err = 'The story loops back to node ' + id + '; it must not contain cycles.'; return; }
+    reached[id] = true;
+    var n = nodes[id];
+    if (n.ending === true) {
+      if (depth !== cfg.choices) err = 'Ending ' + id + ' is reached after ' + depth + ' choices; every path must take exactly ' + cfg.choices + '.';
+      return;
+    }
+    if (depth >= cfg.choices) { err = 'Node ' + id + ' still offers choices after ' + depth + ' choices; it should be an ending.'; return; }
+    onPath[id] = true;
+    walk(n.choices[0].next, depth + 1);
+    walk(n.choices[1].next, depth + 1);
+    onPath[id] = false;
+  }
+  walk(tree.start, 0);
+  if (err) return fail(err);
+  for (var j = 0; j < ids.length; j++) {
+    if (!reached[ids[j]]) return fail('Node ' + ids[j] + ' cannot be reached from the start.');
+  }
+  if (ids.length !== cfg.nodes) return fail('The story has ' + ids.length + ' nodes; it needs exactly ' + cfg.nodes + '.');
+  return { ok:true, reason:'' };
+}
+
+function treeShape(cfg) {
+  var lines = [];
+  var firstEnd = (cfg.nodes + 1) / 2;
+  for (var i = 1; i < firstEnd; i++) {
+    lines.push('n' + i + ' offers two choices, leading to n' + (2 * i) + ' and n' + (2 * i + 1) + '.');
+  }
+  lines.push('n' + firstEnd + ' through n' + cfg.nodes + ' are endings: each has "ending": true and no choices.');
+  return lines.join('\n');
+}
+
+function buildPrompt(settings) {
+  var cfg = BANDS[settings.band];
+  var theme = null;
+  for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === settings.theme) theme = THEMES[i];
+  var name = sanitizeName(settings.name || '').trim();
+  var system = [
+    'You are a gentle bedtime storyteller who writes interactive, choose your own path stories for young children.',
+    'Content rules: keep everything cozy, kind, and safe. No frightening villains, no peril, no injuries, no scary darkness, no loud chases, no lingering sadness, no romance, and no brand names or famous characters. Small problems are solved with kindness, curiosity, patience, or a helpful friend.',
+    'Every ending winds down toward rest: the pace slows, voices grow soft, and the hero settles somewhere warm and safe, ready to sleep. Each ending is different, and all of them are peaceful.',
+    'Output rules: reply with one JSON object only. No markdown, no code fences, and no commentary before or after it.'
+  ].join('\n\n');
+  var schema = '{"title":"...","start":"n1","nodes":{"n1":{"text":"...","choices":[{"label":"...","next":"n2"},{"label":"...","next":"n3"}]},"nX":{"text":"...","ending":true}}}';
+  var user = [
+    'Write a bedtime adventure.',
+    'World: ' + theme.label + '. Story seed: ' + theme.seed,
+    'Listener age: ' + cfg.label + ' years old.',
+    'Vocabulary: ' + cfg.vocab,
+    'Sentences: ' + cfg.sentence,
+    'Length: each node\'s text is about ' + cfg.words + ' words. Separate paragraphs with a blank line if a node has more than one.',
+    name
+      ? 'Hero: a child named ' + name + '. Use the name naturally a few times, in third person.'
+      : 'Hero: tell the story in second person, so the listener is the hero ("you").',
+    'Structure: exactly ' + cfg.nodes + ' nodes with ids n1 through n' + cfg.nodes + '. The start is n1. The listener makes exactly ' + cfg.choices + ' choices on every path, so every ending is reached after ' + cfg.choices + ' choices. Use this exact tree:',
+    treeShape(cfg),
+    'Choice labels are short, inviting actions of 8 words or fewer, such as "Follow the glowing fireflies". The two choices at each node lead somewhere genuinely different, and each node\'s text continues smoothly from the choice that led to it.',
+    'Give the story a short, warm title.',
+    'Schema (ending nodes use "ending": true instead of choices):',
+    schema,
+    'Return the JSON object only.'
+  ].join('\n');
+  return { system:system, user:user };
+}
+/* PURE:END */
+
+var API_URL = 'https://api.anthropic.com/v1/messages';
+var SETTINGS_KEY = 'appaday202.settings';
+var THINK_KEY = 'appaday202.thinkForm';
+var THINK_FORMS = ['between_tools', 'disabled', 'omit'];
+var SIZES = { s:0.9, m:1, l:1.18 };
+var SLEEPY = [
+  'Fluffing the pillows...', 'Counting sleepy sheep...', 'Dimming the stars to a soft glow...',
+  'Tucking in the dragons...', 'Warming a cup of moonlight milk...', 'Whispering to the night owls...',
+  'Folding the clouds into blankets...', 'Hushing the crickets...'
+];
+
+var $ = function (id) { return document.getElementById(id); };
+var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var fadeMs = reduceMotion ? 0 : 400;
+
+var settings = loadSettings();
+var story = null;       // { tree, settings }
+var trail = [];
+var genSeq = 0;
+var sleepyTimer = null;
+var thinkMemo = loadThinkMemo();
+
+/* ---------- persistence ---------- */
+function loadSettings() {
+  var d = { theme:'', band:'5-6', name:'', size:'m' };
+  try {
+    var raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      var s = JSON.parse(raw) || {};
+      if (THEMES.some(function (t) { return t.id === s.theme; })) d.theme = s.theme;
+      if (BANDS[s.band]) d.band = s.band;
+      if (typeof s.name === 'string') d.name = sanitizeName(s.name);
+      if (SIZES[s.size]) d.size = s.size;
+    }
+  } catch (e) { /* storage unavailable */ }
+  return d;
+}
+function saveSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ }
+}
+function loadThinkMemo() {
+  try { return JSON.parse(localStorage.getItem(THINK_KEY) || '{}') || {}; } catch (e) { return {}; }
+}
+function saveThinkMemo() {
+  try { localStorage.setItem(THINK_KEY, JSON.stringify(thinkMemo)); } catch (e) { /* ignore */ }
+}
+
+/* ---------- views ---------- */
+var VIEWS = ['setup', 'loading', 'story', 'end', 'error'];
+function show(view) {
+  VIEWS.forEach(function (v) {
+    var el = $('view-' + v);
+    if (v === view) {
+      el.hidden = false;
+      el.classList.remove('view'); void el.offsetWidth; el.classList.add('view');
+    } else {
+      el.hidden = true;
+    }
+  });
+  window.scrollTo(0, 0);
+}
+function clearEl(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+function setParagraphs(el, text) {
+  clearEl(el);
+  String(text).split(/\n\s*\n/).forEach(function (para) {
+    var t = para.replace(/\s+/g, ' ').trim();
+    if (!t) return;
+    var p = document.createElement('p');
+    p.textContent = t;
+    el.appendChild(p);
+  });
+}
+function svgEl(inner, cls) {
+  var wrap = document.createElement('span');
+  wrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
+  var svg = wrap.firstChild;
+  if (cls) svg.setAttribute('class', cls);
+  return svg;
+}
+
+/* ---------- setup ---------- */
+function renderSetup() {
+  var grid = $('themeGrid');
+  clearEl(grid);
+  THEMES.forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'theme-card';
+    b.setAttribute('aria-pressed', String(settings.theme === t.id));
+    b.appendChild(svgEl(t.glyph));
+    var l = document.createElement('span'); l.className = 't-label'; l.textContent = t.label;
+    var s = document.createElement('span'); s.className = 't-seed'; s.textContent = t.seed;
+    b.appendChild(l); b.appendChild(s);
+    b.addEventListener('click', function () { settings.theme = t.id; saveSettings(); renderSetup(); });
+    grid.appendChild(b);
+  });
+  var pills = $('bandPills');
+  clearEl(pills);
+  BAND_ORDER.forEach(function (k) {
+    var p = document.createElement('button');
+    p.type = 'button';
+    p.className = 'pill';
+    p.textContent = 'Ages ' + BANDS[k].label;
+    p.setAttribute('aria-pressed', String(settings.band === k));
+    p.addEventListener('click', function () { settings.band = k; saveSettings(); renderSetup(); });
+    pills.appendChild(p);
+  });
+  if (document.activeElement !== $('nameInput')) $('nameInput').value = settings.name;
+  var ready = !!settings.theme && !!BANDS[settings.band];
+  $('buildBtn').disabled = !ready;
+  var theme = THEMES.filter(function (t) { return t.id === settings.theme; })[0];
+  $('buildHint').textContent = ready
+    ? theme.label + ' story for ages ' + BANDS[settings.band].label + ', with ' + BANDS[settings.band].choices + ' choices along the way.'
+    : 'Pick a world to begin.';
+}
+
+/* ---------- Claude ---------- */
+function appError(code, message, detail) {
+  var e = new Error(message);
+  e.code = code;
+  e.detail = detail || '';
+  return e;
+}
+
+async function getModel(tier) {
+  tier = tier || 'sonnet';
+  if (window.AppModels) {
+    try { var id = await window.AppModels.get(tier); if (id) return id; } catch (e) { /* fall through */ }
+    try { var id2 = window.AppModels.id(tier); if (id2) return id2; } catch (e2) { /* fall through */ }
+  }
+  throw appError('model', 'The model list did not load. Check your connection and try again.');
+}
+
+async function callClaude(system, user) {
+  var key = window.AppKeys ? await window.AppKeys.get() : null;
+  if (!key) throw appError('nokey', 'A Claude key is needed to write stories. Tap the gear to add one, then tap Try Again.');
+  var model = await getModel('sonnet');
+  var startAt = THINK_FORMS.indexOf(thinkMemo[model]);
+  if (startAt < 0) startAt = 0;
+  var lastMsg = '';
+  for (var i = startAt; i < THINK_FORMS.length; i++) {
+    var body = { model:model, max_tokens:MAX_TOKENS, system:system, messages:[{ role:'user', content:user }] };
+    if (THINK_FORMS[i] !== 'omit') body.thinking = { type:THINK_FORMS[i] };
+    var res;
+    try {
+      res = await fetch(API_URL, {
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'x-api-key':key,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify(body)
+      });
+    } catch (e) {
+      throw appError('network', 'Could not reach Claude. Check your connection and try again.');
+    }
+    var data = null;
+    try { data = await res.json(); } catch (e) { /* non JSON body */ }
+    if (!res.ok) {
+      var msg = (data && data.error && data.error.message) || ('HTTP ' + res.status);
+      if (res.status === 400 && /thinking/i.test(msg) && i < THINK_FORMS.length - 1) { lastMsg = msg; continue; }
+      if (res.status === 401 || res.status === 403) throw appError('auth', 'Claude did not accept the key. Check it in Settings.', msg);
+      if (res.status === 429) throw appError('busy', 'Claude is busy right now. Wait a moment, then try again.', msg);
+      if (res.status >= 500) throw appError('busy', 'Claude is resting for a moment. Please try again shortly.', msg);
+      throw appError('http', 'Claude could not write this story.', msg);
+    }
+    if (thinkMemo[model] !== THINK_FORMS[i]) { thinkMemo[model] = THINK_FORMS[i]; saveThinkMemo(); }
+    var blocks = (data && data.content) || [];
+    var text = blocks.filter(function (b) { return b && b.type === 'text'; })
+      .map(function (b) { return b.text || ''; }).join('');
+    if (!text.trim()) {
+      console.warn('[Bedtime 202] Empty reply. Block types:', blocks.map(function (b) { return b && b.type; }), 'stop_reason:', data && data.stop_reason);
+    }
+    return { text:text, stop_reason:data && data.stop_reason };
+  }
+  throw appError('http', 'Claude could not write this story.', lastMsg);
+}
+
+async function generateStory() {
+  if (!settings.theme || !BANDS[settings.band]) { show('setup'); return; }
+  settings.name = sanitizeName(settings.name).trim();
+  saveSettings();
+  var my = ++genSeq;
+  var snap = { theme:settings.theme, band:settings.band, name:settings.name };
+  show('loading');
+  startSleepy();
+  var p = buildPrompt(snap);
+  var reason = '';
+  try {
+    for (var attempt = 0; attempt < 2; attempt++) {
+      var u = attempt === 0 ? p.user
+        : p.user + '\n\nYour previous attempt was rejected: ' + reason + ' Fix that and return the complete, corrected JSON object only.';
+      var r = await callClaude(p.system, u);
+      if (my !== genSeq) return;
+      if (r.stop_reason === 'max_tokens') {
+        reason = 'The reply was cut off at the length limit before the JSON was finished. Keep each node a little shorter so the whole story fits.';
+        continue;
+      }
+      var tree;
+      try { tree = extractJSON(r.text); }
+      catch (e) { reason = 'The reply was not valid JSON (' + e.message + ').'; continue; }
+      var v = validateTree(tree, snap.band);
+      if (!v.ok) { reason = v.reason; continue; }
+      story = { tree:tree, settings:snap };
+      stopSleepy();
+      startStory();
+      return;
+    }
+    throw appError('invalid', 'The story did not come together this time. A second try usually works.', reason);
+  } catch (e) {
+    if (my !== genSeq) return;
+    stopSleepy();
+    showError(e);
+  }
+}
+
+/* ---------- loading messages ---------- */
+function startSleepy() {
+  stopSleepy();
+  var i = Math.floor(Math.random() * SLEEPY.length);
+  var el = $('sleepyMsg');
+  el.textContent = SLEEPY[i];
+  el.classList.remove('dim');
+  sleepyTimer = setInterval(function () {
+    i = (i + 1) % SLEEPY.length;
+    if (reduceMotion) { el.textContent = SLEEPY[i]; return; }
+    el.classList.add('dim');
+    setTimeout(function () { el.textContent = SLEEPY[i]; el.classList.remove('dim'); }, 400);
+  }, 2800);
+}
+function stopSleepy() { if (sleepyTimer) { clearInterval(sleepyTimer); sleepyTimer = null; } }
+
+/* ---------- story ---------- */
+function startStory() {
+  trail = [];
+  $('storyTitle').textContent = story.tree.title;
+  $('endTitle').textContent = story.tree.title;
+  show('story');
+  renderNode(story.tree.start, true);
+}
+
+function fadeSwap(el, fn, instant) {
+  if (instant || !fadeMs) { fn(); return; }
+  el.classList.add('out');
+  setTimeout(function () { fn(); el.classList.remove('out'); }, fadeMs);
+}
+
+function updatePath() {
+  var total = BANDS[story.settings.band].choices + 1;
+  var step = trail.length;
+  var dots = $('pathDots');
+  clearEl(dots);
+  for (var i = 1; i <= total; i++) {
+    var d = document.createElement('span');
+    d.className = 'dot' + (i < step ? ' done' : (i === step ? ' now' : ''));
+    dots.appendChild(d);
+  }
+  $('pathText').textContent = 'Part ' + step + ' of ' + total;
+}
+
+function renderNode(id, instant) {
+  var node = story.tree.nodes[id];
+  if (!node) return;
+  trail.push(id);
+  if (node.ending === true) {
+    fadeSwap($('storyFader'), function () { showEnding(node); }, instant);
+    return;
+  }
+  var choicesEl = $('choices');
+  Array.prototype.forEach.call(choicesEl.querySelectorAll('button'), function (b) { b.disabled = true; });
+  fadeSwap($('storyFader'), function () {
+    updatePath();
+    setParagraphs($('storyText'), node.text);
+    clearEl(choicesEl);
+    node.choices.forEach(function (c) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choice';
+      b.appendChild(svgEl('<path d="M12 3l1.9 5.3L19 9.2l-4.1 3.3 1.4 5.4L12 15l-4.3 2.9 1.4-5.4L5 9.2l5.1-.9z"/>'));
+      var s = document.createElement('span');
+      s.textContent = c.label;
+      b.appendChild(s);
+      b.addEventListener('click', function () { renderNode(c.next); });
+      choicesEl.appendChild(b);
+    });
+    window.scrollTo(0, 0);
+    var first = choicesEl.querySelector('button');
+    if (first) first.focus({ preventScroll:true });
+  }, instant);
+}
+
+function showEnding(node) {
+  setParagraphs($('endText'), node.text);
+  var name = story.settings.name;
+  $('dreamsLine').textContent = name ? 'Sweet dreams, ' + name + '.' : 'Sweet dreams.';
+  show('end');
+  $('dreamsLine').focus({ preventScroll:true });
+}
+
+function readAgain() {
+  if (!story) { show('setup'); return; }
+  startStory();
+}
+
+/* ---------- error ---------- */
+function showError(e) {
+  var code = e && e.code;
+  $('errTitle').textContent = code === 'nokey' ? 'A key is needed first' : 'The story got a little tangled';
+  $('errMsg').textContent = (e && e.message) || 'Something went wrong. Please try again.';
+  var detail = (e && e.detail) || '';
+  $('errDetail').textContent = detail ? 'Details: ' + detail : '';
+  show('error');
+  $('retryBtn').focus({ preventScroll:true });
+}
+
+/* ---------- settings modal ---------- */
+var lastFocus = null;
+function applySize() {
+  document.documentElement.style.setProperty('--ts', String(SIZES[settings.size] || 1));
+  Array.prototype.forEach.call($('sizeSeg').querySelectorAll('button'), function (b) {
+    b.setAttribute('aria-pressed', String(b.getAttribute('data-size') === settings.size));
+  });
+}
+function openSettings() {
+  lastFocus = document.activeElement;
+  $('settingsModal').hidden = false;
+  $('confirmPanel').hidden = true;
+  $('settingsStatus').textContent = '';
+  if (window.AppKeys) {
+    try { window.AppKeys.mountSettings($('keyMount')); } catch (e) { /* key ring unavailable */ }
+  } else {
+    $('keyMount').textContent = 'The key ring is still loading. Close and reopen Settings in a moment.';
+  }
+  applySize();
+  $('closeSettings').focus();
+}
+function closeSettings() {
+  $('settingsModal').hidden = true;
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+
+/* ---------- wiring ---------- */
+document.addEventListener('DOMContentLoaded', function () {
+  renderSetup();
+  applySize();
+
+  $('nameInput').addEventListener('input', function () {
+    var el = $('nameInput');
+    var clean = sanitizeName(el.value);
+    if (clean !== el.value) el.value = clean;
+    settings.name = clean;
+    saveSettings();
+  });
+  $('nameInput').addEventListener('blur', function () {
+    settings.name = sanitizeName($('nameInput').value).trim();
+    $('nameInput').value = settings.name;
+    saveSettings();
+  });
+  $('nameInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !$('buildBtn').disabled) { e.preventDefault(); generateStory(); }
+  });
+
+  $('buildBtn').addEventListener('click', generateStory);
+  $('cancelBtn').addEventListener('click', function () { genSeq++; stopSleepy(); renderSetup(); show('setup'); });
+  $('restartBtn').addEventListener('click', readAgain);
+  $('storySetupBtn').addEventListener('click', function () { renderSetup(); show('setup'); });
+  $('readAgainBtn').addEventListener('click', readAgain);
+  $('newAdvBtn').addEventListener('click', generateStory);
+  $('changeBtn').addEventListener('click', function () { renderSetup(); show('setup'); });
+  $('retryBtn').addEventListener('click', generateStory);
+  $('errBackBtn').addEventListener('click', function () { renderSetup(); show('setup'); });
+
+  $('gearBtn').addEventListener('click', openSettings);
+  $('closeSettings').addEventListener('click', closeSettings);
+  $('settingsModal').addEventListener('click', function (e) { if (e.target === $('settingsModal')) closeSettings(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('settingsModal').hidden) closeSettings();
+  });
+  Array.prototype.forEach.call($('sizeSeg').querySelectorAll('button'), function (b) {
+    b.addEventListener('click', function () { settings.size = b.getAttribute('data-size'); saveSettings(); applySize(); });
+  });
+  $('clearBtn').addEventListener('click', function () { $('confirmPanel').hidden = false; $('confirmNo').focus(); });
+  $('confirmNo').addEventListener('click', function () { $('confirmPanel').hidden = true; $('clearBtn').focus(); });
+  $('confirmYes').addEventListener('click', function () {
+    try { localStorage.removeItem(SETTINGS_KEY); } catch (e) { /* ignore */ }
+    settings = { theme:'', band:'5-6', name:'', size:'m' };
+    $('nameInput').value = '';
+    applySize();
+    renderSetup();
+    $('confirmPanel').hidden = true;
+    $('settingsStatus').textContent = 'Saved settings cleared.';
+    $('clearBtn').focus();
+  });
+});
+</script>
+</body>
+</html>
